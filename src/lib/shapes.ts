@@ -57,7 +57,7 @@ const BC: Record<string, string> = { black: '#16202a', yellow: '#f6c914', red: '
 type Shape = 'pillar' | 'spar' | 'can' | 'cone' | 'sphere';
 const SHAPES: Record<Shape, { d: string; top: number; bottom: number }> = {
   pillar: { d: 'M24 120 L66 120 L56 50 L34 50 Z', top: 50, bottom: 120 },
-  spar: { d: 'M38 120 L52 120 L52 24 L38 24 Z', top: 24, bottom: 120 },
+  spar: { d: 'M38 120 L52 120 L52 62 L38 62 Z', top: 62, bottom: 120 },
   can: { d: 'M26 120 L64 120 L64 54 L26 54 Z', top: 54, bottom: 120 },
   cone: { d: 'M45 46 L20 120 L70 120 Z', top: 46, bottom: 120 },
   sphere: { d: 'M45 62 a28 28 0 1 0 0.01 0 Z', top: 62, bottom: 118 },
