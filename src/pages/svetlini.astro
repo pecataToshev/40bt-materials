@@ -1,0 +1,123 @@
+---
+import Base from '../layouts/Base.astro';
+import Quiz from '../components/Quiz.astro';
+import LightsGeometry from '../components/LightsGeometry.astro';
+import { scenes, trawlerExtra, lightsSvg, sceneSvg } from '../lib/scenes';
+const groups: [string, string[]][] = [
+  ['Други моторни и малки кораби', ['small7', 'hover', 'wig']],
+  ['Ветроходни кораби', ['sail-bow', 'sail-opt', 'sail-small', 'sail-stern']],
+  ['Влачене и тласкане', ['tow-bow', 'tow-bow200', 'tow-stern', 'towed', 'push', 'tow-obj2', 'tow-obj4', 'tow-obj5']],
+  ['На котва и заседнали', ['anchor-small', 'anchor-big', 'aground-small', 'aground-big']],
+  ['Ограничена маневреност', ['nuc', 'nuc-way', 'ram', 'ram-way', 'cbd', 'dredge', 'mines', 'pilot']],
+  ['Риболовни кораби', ['trawl', 'trawl50', 'fish', 'fish-rest', 'fish-gear']],
+];
+const cx = 230, cy = 230;
+const pt = (a: number, r: number) => { const t = (a * Math.PI) / 180; return [cx + r * Math.sin(t), cy - r * Math.cos(t)]; };
+const wedge = (a1: number, a2: number, r: number, fill: string, op = 0.75) => {
+  const [x1, y1] = pt(a1, r), [x2, y2] = pt(a2, r);
+  return `<path d="M${cx} ${cy} L${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${a2 - a1 > 180 ? 1 : 0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${fill}" fill-opacity="${op}" stroke="${fill}" stroke-width="1.5"/>`;
+};
+const ray = (a: number) => { const [x, y] = pt(a, 205); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#0c2233" stroke-width="1" stroke-dasharray="4 4"/>`;};
+const txt = (a: number, r: number, t: string, cls = 'sl') => { const [x, y] = pt(a, r); return `<text x="${x.toFixed(0)}" y="${y.toFixed(0)}" text-anchor="middle" class="${cls}">${t}</text>`; };
+const sectorSvg =
+  wedge(-112.5, 112.5, 200, '#c9d3da', 0.55) + wedge(112.5, 247.5, 200, '#e8d57a', 0.55) +
+  wedge(0, 112.5, 135, '#27a85a', 0.8) + wedge(-112.5, 0, 135, '#e0414a', 0.8) +
+  [-112.5, 0, 112.5, 247.5].map(ray).join('') +
+  txt(0, 215, '0°', 'sm') + txt(112.5, 218, '112,5°', 'sm') + txt(-112.5, 218, '112,5°', 'sm') + txt(180, 222, '180°', 'sm') +
+  txt(30, 110, 'зелена', 'sw') + txt(-30, 110, 'червена', 'sw') +
+  txt(0, 168, 'топова 225°') + txt(180, 168, 'кърмова / влекаща 135°');
+const byId = new Map(scenes.map((s) => [s.id, s]));
+---
+<Base title="Светлини" description="Навигационни светлини по МППСМ (COLREG) с нарисувани нощни схеми.">
+  <div class="wrap">
+    <h1>Светлини на корабите</h1>
+    <p>Схемите показват как изглежда корабът нощем отпред (освен ако не е посочено друго). Всички са нарисувани по правилата 20–31 на МППСМ. Не са копия от картинките в PDF-а.</p>
+
+    <h2>Видимост и сектори</h2>
+    <figure class="fig" style="max-width:560px;margin:1rem auto;padding:1rem">
+      <svg viewBox="-30 0 520 470" role="img" aria-label="Сектори на навигационните светлини, гледани отгоре" xmlns="http://www.w3.org/2000/svg" style="max-height:none;background:none">
+        <style>.sl{font:600 13px 'IBM Plex Sans',sans-serif;fill:#0c2233}.sw{font:600 12px 'IBM Plex Sans',sans-serif;fill:#fff}.sm{font:11px 'IBM Plex Mono',monospace;fill:#456}</style>
+        <Fragment set:html={sectorSvg} />
+        <path d="M230 188 C 250 208, 250 250, 240 276 L 220 276 C 210 250, 210 208, 230 188 Z" fill="#fff" stroke="#0c2233" stroke-width="2"/>
+        <text x="230" y="180" text-anchor="middle" class="sm">нос</text>
+      </svg>
+      <figcaption>Корабът е гледан отгоре. Топовата светлина (бяла) свети 225° напред. Зелената и червената свети по 112,5°, граница им е носовата линия. Кърмовата и влекащата светлина покриват 135° назад. Границите на всички сектори са 22,5° зад траверса.</figcaption>
+    </figure>
+
+    <h3>Видимост в мили по дължина на кораба</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Светлина</th><th>Цвят</th><th>Сектор</th><th>50 м и повече</th><th>20–50 м</th><th>12–20 м</th><th>под 12 м</th></tr></thead>
+      <tbody>
+        <tr><td>Топова</td><td>Бяла</td><td>225° напред</td><td>6</td><td>5</td><td>3</td><td>2</td></tr>
+        <tr><td>Бордови</td><td>Зелена (десен), червена (ляв)</td><td>112,5° всяка</td><td>3</td><td>2</td><td>2</td><td>1</td></tr>
+        <tr><td>Кърмова</td><td>Бяла</td><td>135° назад</td><td>3</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td>Влекаща</td><td>Жълта</td><td>135° назад</td><td>3</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td>Кръгововидима</td><td>Бяла, червена, зелена, жълта</td><td>360°</td><td>3</td><td>2</td><td>2</td><td>2</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><p>Ако числата ти трябват наизуст: <strong>6–5–3–2</strong> за топовата, <strong>3–2–2–1</strong> за бордовите. Всички останали са <strong>3–2–2–2</strong>.</p></div>
+
+    <h2>Височини и разстояния между светлините</h2>
+    <p>Правилата са от Приложение I към МППСМ. Височината се мери от най-горната непрекъсната палуба точно под светлината.</p>
+    <LightsGeometry />
+    <div class="table-wrap"><table>
+      <thead><tr><th>Какво</th><th>Кораб 20 м и повече</th><th>Кораб под 20 м</th></tr></thead>
+      <tbody>
+        <tr><td>Предна топова светлина над корпуса</td><td>≥ 6 м (най-много 12 м; ≥ ширината, ако е над 6 м)</td><td>12–20 м: ≥ 2,5 м над планшира</td></tr>
+        <tr><td>Две топови: хоризонтално</td><td>≥ ½ от дължината, най-много 100 м. Предната е най-много ¼ от дължината от носа</td><td>—</td></tr>
+        <tr><td>Две топови: вертикално</td><td>Задната е по-високо (над 4,5 м при влачене). Вижда се над предната и отделно на 1000 м</td><td>≥ 1 м една над друга, най-ниската ≥ 2 м над планшира</td></tr>
+        <tr><td>Топова светлина на кораб под 20 м (само една)</td><td>—</td><td>Колкото е възможно по-напред. Не е нужно да е пред средата на кораба</td></tr>
+        <tr><td>Бордови: надлъжно място</td><td>На борда или близо до него. Не са пред предната топова. Мостикът може да е навсякъде</td><td>—</td></tr>
+        <tr><td>Кърмова светлина</td><td colspan="2">Колкото е възможно по-близо до кърмата (правило 21). Приложение I не дава число за разстояние от кърмата</td></tr>
+        <tr><td>Бордови светлини: височина</td><td>≤ ¾ от височината на предната топова. Не са пред нея</td><td>Комбиниран фенер ≥ 1 м под топовата</td></tr>
+        <tr><td>Светлини една над друга (2–3)</td><td>≥ 2 м една от друга. Най-ниската ≥ 4 м над корпуса</td><td>≥ 1 м една от друга. Най-ниската ≥ 2 м над корпуса</td></tr>
+        <tr><td>Три светлини една над друга</td><td colspan="2">На равни разстояния</td></tr>
+        <tr><td>Две котвени светлини</td><td>Предната е ≥ 4,5 м над задната. На кораб от 50 м предната е ≥ 6 м над корпуса</td><td>—</td></tr>
+        <tr><td>Топова светлина при кораб под 12 м</td><td colspan="2">Ако има бордови и кърмова: ≥ 1 м над бордовите</td></tr>
+        <tr><td>Знаци по вертикала</td><td colspan="2">≥ 1,5 м един от друг. Размери: сфера и основа на конус Ø ≥ 0,6 м, височина на конус = Ø, на цилиндър = 2 × Ø</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><p>Запомни: топовата светлина (<strong>225°</strong>) и двете бордови заедно (<strong>112,5° + 112,5° = 225°</strong>) покриват един и същ сектор отпред. Кърмовата светлина (<strong>135°</strong>) покрива останалото: <strong>225° + 135° = 360°</strong>.</p></div>
+
+    <h2>Моторни кораби на ход</h2>
+    {[['Под 50 м', ['m50-bow', 'm50-stbd', 'm-stern', 'm50-port']], ['От 50 м нагоре', ['m50p-bow', 'm50p-stbd', 'm50p-stern', 'm50p-port']]].map(([t, ids]) => (
+      <>
+        <h3>{t}</h3>
+        <div class="grid four">
+          {(ids as string[]).map((id, i) => { const s = byId.get(id)!; return (
+            <figure class="fig"><Fragment set:html={sceneSvg(id)} /><figcaption><strong>{['Отпред', 'Отдясно', 'Отзад', 'Отляво'][i]}</strong><span>{s.note}</span></figcaption></figure>
+          ); })}
+        </div>
+      </>
+    ))}
+
+    {groups.map(([title, ids]) => (
+      <>
+        <h2>{title}</h2>
+        <div class="grid">
+          {ids.map((id) => { const s = byId.get(id); return s ? (
+            <figure class="fig"><Fragment set:html={sceneSvg(id)} /><figcaption><strong>{s.title}</strong><span>{s.note}</span></figcaption></figure>
+          ) : null; })}
+        </div>
+      </>
+    ))}
+
+    <h2>Допълнителни сигнали на траулери</h2>
+    <div class="grid">
+      {trawlerExtra.map((t) => (
+        <figure class="fig"><Fragment set:html={lightsSvg(t.lights, undefined, t.title)} /><figcaption><strong>{t.title}</strong><span>{t.note}</span></figcaption></figure>
+      ))}
+    </div>
+
+    <h2>Как да четеш светлини на изпита</h2>
+    <div class="note">
+      <p><strong>1.</strong> Има ли бордови светлини? Ако няма, корабът е на котва, заседнал или без ход.</p>
+      <p><strong>2.</strong> Колко топови и къде е жълтата? Две топови във вертикална линия значи влачене (под 200 м), три значи над 200 м.</p>
+      <p><strong>3.</strong> Червено над бяло значи риболов. Зелено над бяло значи траулер.</p>
+      <p><strong>4.</strong> Червено над червено значи кораб без управление. Червено-бяло-червено значи ограничена маневреност.</p>
+    </div>
+
+    <h2>Тест</h2>
+    <Quiz title="Светлини и знаци" topic="svetlini" count={10} />
+  </div>
+</Base>

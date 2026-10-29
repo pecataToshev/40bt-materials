@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import Quiz from '../components/Quiz.astro';
+import { dayScenes, topmarkScenes, flags, flagSvg } from '../lib/shapes';
+---
+<Base title="Дневни знаци" description="Сфери, конуси, цилиндри, ромбове и флагове през деня.">
+  <div class="wrap">
+    <h1>Дневни знаци</h1>
+    <p>През деня корабите показват черни фигури вместо светлини. Формите се помнят по три правила: <strong>сфера</strong> = котва или липса на управление, <strong>конус</strong> = двигател или риболов, <strong>ромб</strong> = влачене или ограничена маневреност.</p>
+
+    <h2>Основни фигури</h2>
+    <div class="grid">
+      {dayScenes.map((s) => (
+        <figure class="fig"><Fragment set:html={s.svg()} /><figcaption><strong>{s.title}</strong><span>{s.note}</span></figcaption></figure>
+      ))}
+    </div>
+
+    <h2>Кардинални знаци: топмарки</h2>
+    <p>Върховете на конусите сочат към черното на знака. Горе-горе значи Север, долу-долу значи Юг.</p>
+    <div class="grid">
+      {topmarkScenes.map((s) => (
+        <figure class="fig"><Fragment set:html={s.svg()} /><figcaption><strong>{s.title}</strong><span>{s.note}</span></figcaption></figure>
+      ))}
+    </div>
+
+    <h2>Сигнални флагове (МКС)</h2>
+    <p>Флаговете от изпита. Рисунките са мои, цветовете са стандартни.</p>
+    <div class="grid">
+      {flags.map((f) => (
+        <figure class="fig"><Fragment set:html={flagSvg(f.code)} /><figcaption><strong>{f.name}</strong><span>{f.meaning}</span></figcaption></figure>
+      ))}
+    </div>
+    <div class="note warn"><p>Значенията на флагове T и Q са взети по ключа на изпитните въпроси. Ако нещо ти се стори странно, сравни с официалния Международен кодекс на сигналите.</p></div>
+
+    <h2>Тест</h2>
+    <Quiz title="Светлини и знаци" topic="svetlini" count={10} />
+  </div>
+</Base>

@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import Quiz from '../components/Quiz.astro';
+const cx = 210, cy = 210, R = 180;
+const pt = (a: number, r = R) => { const t = (a * Math.PI) / 180; return [cx + r * Math.sin(t), cy - r * Math.cos(t)]; };
+// сектор от a1 до a2 градуса, измерени от носа по часовника
+const sector = (a1: number, a2: number, fill: string, label: string) => {
+  const [x1, y1] = pt(a1), [x2, y2] = pt(a2);
+  const large = Math.abs(a2 - a1) > 180 ? 1 : 0;
+  return `<path d="M${cx} ${cy} L${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${fill}" stroke="var(--bg)" stroke-width="2"><title>${label}</title></path>`;
+};
+const secs: [number, number, string, string][] = [
+  [-85, 0, 'var(--c1)', 'Бейдевинд'], [0, 85, 'var(--c1)', 'Бейдевинд'],
+  [85, 95, 'var(--c2)', 'Халфвинд'], [-95, -85, 'var(--c2)', 'Халфвинд'],
+  [95, 175, 'var(--c3)', 'Бакщаг'], [-175, -95, 'var(--c3)', 'Бакщаг'],
+  [175, 185, 'var(--c4)', 'Фордевинд'],
+];
+const lab = (a: number, t: string, r = 140) => { const [x, y] = pt(a, r); return `<text x="${x.toFixed(0)}" y="${y.toFixed(0)}" text-anchor="middle" class="sl">${t}</text>`; };
+---
+<Base title="Ветрове" description="Курсови ъгли на вятъра спрямо ветроходния кораб: бейдевинд, халфвинд, бакщаг, фордевинд.">
+  <div class="wrap">
+    <h1>Ветрове при ветроходните кораби</h1>
+    <p>Името на вятъра зависи от <strong>курсовия ъгъл</strong>: ъгълът между носа на кораба и посоката, от която духа вятърът. Измерва се от 0° до 180° наляво и надясно.</p>
+
+    <figure class="fig" style="max-width:560px;margin-inline:auto;padding:1rem">
+      <svg viewBox="0 0 420 430" role="img" aria-label="Диаграма на вятъра спрямо ветроходен кораб" xmlns="http://www.w3.org/2000/svg" style="max-height:none;background:none;--c1:#9fd0e8;--c2:#f6d77a;--c3:#f0a6c4;--c4:#b7a5e6">
+        <style>.sl{font:600 13px 'IBM Plex Sans',sans-serif;fill:#0c2233}.sm{font:11px 'IBM Plex Mono',monospace;fill:var(--muted,#456)}</style>
+        {secs.map(([a, b, f, l]) => <Fragment set:html={sector(a, b, f, l)} />)}
+        <Fragment set:html={
+          lab(-42, 'бейдевинд', 120) + lab(42, 'бейдевинд', 120) +
+          lab(-90, 'халфвинд', 150) + lab(90, 'халфвинд', 150) +
+          lab(-135, 'бакщаг', 130) + lab(135, 'бакщаг', 130) +
+          lab(180, 'фордевинд', 150) +
+          lab(0, 'левентик', 168)
+        } />
+        <!-- кораб -->
+        <path d="M210 170 C 235 195, 235 240, 222 268 L 198 268 C 185 240, 185 195, 210 170 Z" fill="#fff" stroke="#0c2233" stroke-width="2"/>
+        <line x1="210" y1="200" x2="210" y2="262" stroke="#0c2233" stroke-width="2"/>
+        <text x="210" y="157" text-anchor="middle" class="sm">нос</text>
+        <text x="44" y="240" text-anchor="middle" class="sm">ляв борд</text>
+        <text x="376" y="240" text-anchor="middle" class="sm">десен борд</text>
+        <text x="95" y="30" text-anchor="middle" class="sm">0°–85°</text>
+        <text x="340" y="30" text-anchor="middle" class="sm">0°–85°</text>
+        <text x="210" y="420" text-anchor="middle" class="sm">175°–180°</text>
+      </svg>
+      <figcaption>Диаграмата е симетрична. Вятърът от десния борд дава <em>десен галс</em>, от левия — <em>ляв галс</em>.</figcaption>
+    </figure>
+
+    <h2>Имена и сектори</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Име</th><th>Курсов ъгъл</th><th>Описание</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Левентик</strong></td><td>около 0°</td><td>Вятърът идва право отпред. Корабът не може да върви напред под ветрила</td></tr>
+        <tr><td><strong>Бейдевинд</strong></td><td>0°–85°</td><td>Вятър по носовите курсови ъгли</td></tr>
+        <tr><td><strong>Халфвинд</strong></td><td>85°–95°</td><td>Вятър точно от траверса</td></tr>
+        <tr><td><strong>Бакщаг</strong></td><td>95°–170°</td><td>Вятър по кърмовите курсови ъгли</td></tr>
+        <tr><td><strong>Фордевинд</strong></td><td>175° ляво – 175° дясно</td><td>Вятър право от кърмата</td></tr>
+        <tr><td><strong>Десен галс</strong></td><td>—</td><td>Вятърът духа от десния борд</td></tr>
+        <tr><td><strong>Ляв галс</strong></td><td>—</td><td>Вятърът духа от левия борд</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><p><strong>Как да го запомниш:</strong> Б-ейдевинд е <em>Близо</em> до носа. Б-акщаг е <em>Близо</em> до кърмата, но встрани. Фордевинд е право отзад. Халфвинд е на траверса (по средата).</p></div>
+
+    <h2>Речник на ветроходството</h2>
+    <div class="table-wrap"><table>
+      <tbody>
+        <tr><th>Ванти</th><td>Въжета към двата борда, които закрепват мачтата</td></tr>
+        <tr><th>Стенга</th><td>Удължение на мачтата</td></tr>
+        <tr><th>Кокпит</th><td>Удълбочение в палубата, където се разполагат хората</td></tr>
+        <tr><th>Шквал</th><td>Внезапно и краткотрайно усилване на вятъра или рязка промяна на посоката му</td></tr>
+        <tr><th>Плаваща котва</th><td>Намалява дрейфа на кораба</td></tr>
+        <tr><th>Рискливост</th><td>Неустойчив курс: корабът често и бързо се отклонява от курса</td></tr>
+        <tr><th>Посока на вятъра</th><td>Винаги посоката, <em>от която</em> идва</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>Тест</h2>
+    <Quiz title="Ветрове и ветроходство" ids={[78, 79, 80, 81, 82, 83, 84, 85, 87, 90, 113, 611, 616, 617]} count={10} />
+  </div>
+</Base>

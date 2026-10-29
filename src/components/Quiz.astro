@@ -1,0 +1,58 @@
+---
+import { bank, byN, sceneFor, topics } from '../lib/bank';
+interface Props { title?: string; topic?: string; ids?: number[]; count?: number; mode?: 'topic' | 'mistakes' | 'exam'; }
+const { title = 'Тест', topic, ids, count = 10, mode = 'topic' } = Astro.props;
+let pool = ids ? ids.map((n) => byN.get(n)!).filter(Boolean) : topic ? bank.filter((q) => q.t === topic) : bank;
+const data = pool.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q, o: q.o, k: q.k, svg: sceneFor(q) ?? null, t: q.t }));
+const id = `quiz-${Math.random().toString(36).slice(2, 8)}`;
+---
+<section class="quiz" id={id} data-count={count} data-mode={mode} data-title={title}>
+  <div class="quiz-head"><strong>{title}</strong><span class="meta"></span></div>
+  <div class="body"><button class="btn start" type="button">Започни</button></div>
+  <script type="application/json" class="qdata" set:html={JSON.stringify(data)} />
+</section>
+<script>
+  const KEY = 'bt40-mistakes';
+  const load = (): number[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+  const save = (a: number[]) => { try { localStorage.setItem(KEY, JSON.stringify([...new Set(a)])); } catch {} };
+  const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+  const L = ['А', 'Б', 'В', 'Г'];
+  document.querySelectorAll<HTMLElement>('.quiz').forEach((root) => {
+    const all = JSON.parse(root.querySelector('.qdata')!.textContent || '[]') as any[];
+    const body = root.querySelector<HTMLElement>('.body')!;
+    const meta = root.querySelector<HTMLElement>('.meta')!;
+    const mode = root.dataset.mode;
+    const count = Number(root.dataset.count) || 10;
+    let list: any[] = [], i = 0, right = 0;
+    const shuffle = <T,>(a: T[]) => { a = [...a]; for (let j = a.length - 1; j > 0; j--) { const k = Math.floor(Math.random() * (j + 1)); [a[j], a[k]] = [a[k], a[j]]; } return a; };
+    const start = () => {
+      root.classList.add('open');
+      let src = all;
+      if (mode === 'mistakes') { const m = load(); src = all.filter((q) => m.includes(q.n)); if (!src.length) { body.innerHTML = '<p>Още нямаш записани грешки. Реши някой тест и грешните въпроси ще се появят тук.</p>'; return; } }
+      list = shuffle(src).slice(0, mode === 'mistakes' ? src.length : count); i = 0; right = 0; show();
+    };
+    const show = () => {
+      const q = list[i];
+      meta.textContent = `${i + 1} / ${list.length} · въпрос № ${q.n}`;
+      body.innerHTML = `<p class="quiz-q">${esc(q.q)}</p>` + (q.svg ? `<div class="quiz-scene">${q.svg}</div>` : '') +
+        `<div class="opts">${q.o.map((o: string, j: number) => `<button type="button" class="opt" data-j="${j}"><span class="l">${L[j]}.</span> ${esc(o)}</button>`).join('')}</div><div class="fb"></div>`;
+      body.querySelectorAll<HTMLButtonElement>('.opt').forEach((b) => b.addEventListener('click', () => answer(Number(b.dataset.j))));
+    };
+    const answer = (j: number) => {
+      const q = list[i];
+      body.querySelectorAll<HTMLButtonElement>('.opt').forEach((b, x) => { b.disabled = true; if (x === q.k) b.classList.add('ok'); else if (x === j) b.classList.add('no'); });
+      const m = load();
+      if (j === q.k) { right++; if (mode === 'mistakes') save(m.filter((n) => n !== q.n)); } else save([...m, q.n]);
+      const last = i === list.length - 1;
+      body.querySelector('.fb')!.innerHTML = `<div class="row"><button type="button" class="btn next">${last ? 'Резултат' : 'Следващ'}</button></div>`;
+      body.querySelector('.next')!.addEventListener('click', () => { if (last) done(); else { i++; show(); } });
+    };
+    const done = () => {
+      const pct = Math.round((right / list.length) * 100);
+      meta.textContent = '';
+      body.innerHTML = `<div class="score">${right} / ${list.length} (${pct}%)</div><div class="bar"><i style="width:${pct}%"></i></div><div class="row"><button type="button" class="btn again">Пак</button></div>`;
+      body.querySelector('.again')!.addEventListener('click', start);
+    };
+    root.querySelector('.start')!.addEventListener('click', start);
+  });
+</script>

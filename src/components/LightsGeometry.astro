@@ -1,0 +1,187 @@
+---
+// Приложение I към МППСМ: разположение на светлините. Схеми, не са в мащаб.
+---
+<figure class="fig geo">
+  <svg viewBox="0 0 780 540" role="img" aria-label="Разположение на светлините на кораб от 60 м: отгоре с хоризонталните разстояния и отстрани с височините, в един мащаб" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="hz" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#e0414a" stroke-width="2" opacity=".35"/></pattern></defs>
+    <rect width="780" height="540" fill="#fff"/>
+    <text x="20" y="16" class="g-sl">ОТГОРЕ: хоризонтални разстояния (кораб 60 м, ширина 9 м)</text>
+
+    <!-- ===== ИЗГЛЕД ОТГОРЕ ===== -->
+    <path d="M40 40 L570 40 Q630 48 640 85 Q630 122 570 130 L40 130 Z" fill="#dfe7ec" stroke="#0c2233" stroke-width="2"/>
+    <rect x="520" y="41" width="118" height="88" fill="url(#hz)"/>
+    <line x1="520" y1="36" x2="520" y2="134" stroke="#e0414a" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <text x="580" y="82" text-anchor="middle" class="g-sm" style="fill:#b3262d;font-weight:600">зона без</text>
+    <text x="580" y="96" text-anchor="middle" class="g-sm" style="fill:#b3262d;font-weight:600">бордови</text>
+    <!-- светлини -->
+    <circle cx="200" cy="85" r="6" fill="#fff" stroke="#0c2233" stroke-width="2"/>
+    <circle cx="520" cy="85" r="6" fill="#fff" stroke="#0c2233" stroke-width="2"/>
+    <circle cx="52" cy="85" r="5" fill="#fff" stroke="#0c2233" stroke-width="1.5"/>
+    <circle cx="329" cy="49" r="5" fill="#e0414a" stroke="#0c2233" stroke-width="1.5"/>
+    <circle cx="329" cy="121" r="5" fill="#2fbf68" stroke="#0c2233" stroke-width="1.5"/>
+    <text x="200" y="110" text-anchor="middle" class="g-sm">задна топова</text>
+    <text x="520" y="110" text-anchor="middle" class="g-sm">предна топова</text>
+    <text x="52" y="106" class="g-sm">кърмова</text>
+    <text x="340" y="56" class="g-sm">червена (ляв борд)</text>
+    <text x="340" y="124" class="g-sm">зелена (десен борд)</text>
+    <!-- до 10% от ширината навътре -->
+    <g class="g-dim"><line x1="316" y1="40" x2="316" y2="49"/><line x1="311" y1="40" x2="321" y2="40"/><line x1="311" y1="49" x2="321" y2="49"/></g>
+    <text x="328" y="33" class="g-dm">≤ 10% от ширината навътре (≤ 1 м)</text>
+    <!-- хоризонтални размери -->
+    <g class="g-dim">
+      <line x1="200" y1="160" x2="520" y2="160"/><line x1="200" y1="152" x2="200" y2="168"/><line x1="520" y1="152" x2="520" y2="168"/>
+      <line x1="520" y1="188" x2="640" y2="188"/><line x1="520" y1="180" x2="520" y2="196"/><line x1="640" y1="180" x2="640" y2="196"/>
+      <line x1="40" y1="214" x2="640" y2="214"/><line x1="40" y1="206" x2="40" y2="222"/><line x1="640" y1="206" x2="640" y2="222"/>
+    </g>
+    <text x="360" y="154" text-anchor="middle" class="g-dm">≥ ½ L между двете топови (най-много 100 м)</text>
+    <text x="580" y="176" text-anchor="middle" class="g-dm">≤ ¼ L от носа</text>
+    <text x="340" y="208" text-anchor="middle" class="g-dm">L (дължина)</text>
+    <text x="22" y="190" class="g-sm">бордовите: на или близо до борда,</text>
+    <text x="22" y="204" class="g-sm">но не пред предната топова</text>
+    <text x="22" y="236" class="g-sm">кърмовата: колкото е възможно по-близо до кърмата (пр. 21)</text>
+
+    <!-- ===== ИЗГЛЕД ОТСТРАНИ ===== -->
+    <text x="20" y="272" class="g-sl">ОТСТРАНИ: вертикални разстояния (височина над най-горната непрекъсната палуба)</text>
+    <g transform="translate(0 200)">
+      <rect y="262" width="780" height="150" fill="#cfe3ee" opacity=".0"/>
+      <path d="M40 222 L640 222 L600 262 L70 262 Z" fill="#dfe7ec" stroke="#0c2233" stroke-width="2"/>
+      <text x="330" y="247" text-anchor="middle" class="g-sm">главна палуба</text>
+      <line x1="520" y1="222" x2="520" y2="162" stroke="#0c2233" stroke-width="3"/>
+      <line x1="200" y1="222" x2="200" y2="117" stroke="#0c2233" stroke-width="3"/>
+      <circle cx="520" cy="162" r="6" fill="#fff" stroke="#0c2233" stroke-width="2"/>
+      <circle cx="200" cy="117" r="6" fill="#fff" stroke="#0c2233" stroke-width="2"/>
+      <circle cx="52" cy="215" r="5" fill="#fff" stroke="#0c2233" stroke-width="1.5"/>
+      <text x="534" y="156" class="g-sl">предна топова</text>
+      <text x="214" y="112" class="g-sl">задна топова</text>
+      <text x="62" y="204" class="g-sm">кърмова</text>
+      <!-- бордова светлина -->
+      <line x1="329" y1="195" x2="329" y2="222" stroke="#0c2233" stroke-width="2"/>
+      <circle cx="329" cy="195" r="5" fill="#2fbf68" stroke="#0c2233" stroke-width="1.5"/>
+      <text x="318" y="199" text-anchor="end" class="g-sl">бордова светлина</text>
+      <!-- линия ¾ -->
+      <line x1="218" y1="177" x2="512" y2="177" stroke="#d98a00" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="224" y="171" class="g-sm" style="fill:#9a5f00;font-weight:600">¾ от предната топова: горна граница</text>
+      <text x="360" y="213" class="g-sm">не по-ниско от палубните светлини</text>
+      <g class="g-dim">
+        <line x1="580" y1="162" x2="580" y2="222"/><line x1="572" y1="162" x2="588" y2="162"/><line x1="572" y1="222" x2="588" y2="222"/>
+        <line x1="150" y1="117" x2="150" y2="162"/><line x1="142" y1="117" x2="158" y2="117"/><line x1="142" y1="162" x2="158" y2="162"/>
+        <line x1="150" y1="162" x2="514" y2="162" stroke-dasharray="3 4"/>
+        <line x1="346" y1="195" x2="346" y2="222"/><line x1="340" y1="195" x2="352" y2="195"/><line x1="340" y1="222" x2="352" y2="222"/>
+      </g>
+      <text x="594" y="178" class="g-dm">≥ 6 м над палубата</text>
+      <text x="594" y="193" class="g-sm">най-много 12 м; ≥ ширината</text>
+      <text x="594" y="207" class="g-sm">при ширина над 6 м</text>
+      <text x="24" y="132" class="g-dm">задната ≥ 4,5 м</text>
+      <text x="24" y="148" class="g-dm">по-високо</text>
+      <text x="24" y="164" class="g-sm">(вижда се над предната</text>
+      <text x="24" y="178" class="g-sm">отделно, на 1000 м)</text>
+      <text x="360" y="199" class="g-dm">2,7 м над палубата</text>
+      <g class="g-dim"><line x1="40" y1="290" x2="140" y2="290"/><line x1="40" y1="284" x2="40" y2="296"/><line x1="140" y1="284" x2="140" y2="296"/></g>
+      <text x="90" y="310" text-anchor="middle" class="g-sm">10 м (мащаб)</text>
+    </g>
+  </svg>
+  <figcaption><strong>Кораб от 60 м в един мащаб (10 px = 1 м).</strong> Горе: хоризонтални разстояния, долу: височини. Правила: Приложение I, т. 2 и 3, МППСМ правило 21 и MSC.1/Circ.1260/Rev.1 за „близо до борда“. Схемата е илюстрация.</figcaption>
+</figure>
+
+<figure class="fig geo">
+  <svg viewBox="0 0 780 330" role="img" aria-label="Кораб, гледан отпред: топова светлина на мачтата, бордови светлини на крилата на мостика с черни екрани" xmlns="http://www.w3.org/2000/svg">
+    <rect width="780" height="330" fill="#fff"/>
+    <rect y="262" width="780" height="68" fill="#cfe3ee"/>
+    <path d="M215 196 L565 196 L520 262 L260 262 Z" fill="#dfe7ec" stroke="#0c2233" stroke-width="2"/>
+    <rect x="305" y="128" width="170" height="68" fill="#c3d0d8" stroke="#0c2233" stroke-width="2"/>
+    <rect x="325" y="146" width="130" height="20" fill="#fff" stroke="#0c2233"/>
+    <!-- крила на мостика: стърчат встрани над борда -->
+    <rect x="190" y="170" width="400" height="10" fill="#9fb2bf" stroke="#0c2233" stroke-width="2"/>
+    <line x1="390" y1="128" x2="390" y2="36" stroke="#0c2233" stroke-width="3"/>
+    <circle cx="390" cy="36" r="7" fill="#fff" stroke="#0c2233" stroke-width="2"/>
+    <!-- екрани и светлини -->
+    <rect x="214" y="142" width="6" height="28" fill="#0b1620"/>
+    <rect x="560" y="142" width="6" height="28" fill="#0b1620"/>
+    <circle cx="204" cy="156" r="8" fill="#2fbf68" stroke="#0c2233" stroke-width="2"/>
+    <circle cx="576" cy="156" r="8" fill="#e0414a" stroke="#0c2233" stroke-width="2"/>
+    <text x="204" y="124" text-anchor="middle" class="g-sl">зелена</text><text x="204" y="110" text-anchor="middle" class="g-sm">десен борд</text>
+    <text x="576" y="124" text-anchor="middle" class="g-sl">червена</text><text x="576" y="110" text-anchor="middle" class="g-sm">ляв борд</text>
+    <text x="404" y="40" class="g-sl">топова светлина</text>
+    <text x="390" y="222" text-anchor="middle" class="g-sm">корпус</text>
+    <text x="640" y="176" class="g-sm">крила на мостика</text>
+    <line x1="636" y1="174" x2="592" y2="175" stroke="#8a99a5" stroke-dasharray="3 3"/>
+    <text x="640" y="146" class="g-sm">черен екран</text><line x1="636" y1="144" x2="570" y2="150" stroke="#8a99a5" stroke-dasharray="3 3"/>
+    <text x="20" y="300" class="g-sm">Гледано отпред, от носа: десният борд на кораба е вляво на картинката.</text>
+  </svg>
+  <figcaption><strong>Къде стоят бордовите светлини (пример).</strong> Приложение I изисква само да са „на борда или близо до него“, с вътрешни черни екрани на кораби от 20 м нагоре. Точното място зависи от кораба. На много големи кораби са на крилата на мостика, но това не е част от правилата. Схемата е примерна.</figcaption>
+</figure>
+
+
+<figure class="fig geo">
+  <svg viewBox="0 0 780 340" role="img" aria-label="Вертикални светлини: височини и разстояния" xmlns="http://www.w3.org/2000/svg">
+    <rect width="780" height="340" fill="#fff"/>
+    <text x="120" y="24" text-anchor="middle" class="g-sl">20 м и повече</text>
+    <rect x="30" y="280" width="180" height="30" fill="#dfe7ec" stroke="#0c2233" stroke-width="2"/>
+    <line x1="120" y1="280" x2="120" y2="50" stroke="#0c2233" stroke-width="3"/>
+    <circle cx="120" cy="60" r="8" fill="#ff3d3d" stroke="#0c2233" stroke-width="1.5"/>
+    <circle cx="120" cy="120" r="8" fill="#fdfdf2" stroke="#0c2233" stroke-width="1.5"/>
+    <circle cx="120" cy="180" r="8" fill="#ff3d3d" stroke="#0c2233" stroke-width="1.5"/>
+    <g class="g-dim">
+      <line x1="160" y1="60" x2="160" y2="280"/><line x1="152" y1="60" x2="168" y2="60"/><line x1="152" y1="120" x2="168" y2="120"/><line x1="152" y1="180" x2="168" y2="180"/><line x1="152" y1="280" x2="168" y2="280"/>
+    </g>
+    <text x="174" y="94" class="g-dm">≥ 2 м</text>
+    <text x="174" y="154" class="g-dm">≥ 2 м</text>
+    <text x="174" y="234" class="g-dm">≥ 4 м над корпуса</text>
+    <text x="174" y="268" class="g-sm">три светлини: равни разстояния</text>
+
+    <text x="390" y="24" text-anchor="middle" class="g-sl">под 20 м</text>
+    <rect x="310" y="280" width="160" height="30" fill="#dfe7ec" stroke="#0c2233" stroke-width="2"/>
+    <line x1="390" y1="280" x2="390" y2="130" stroke="#0c2233" stroke-width="3"/>
+    <circle cx="390" cy="140" r="8" fill="#ff3d3d" stroke="#0c2233" stroke-width="1.5"/>
+    <circle cx="390" cy="190" r="8" fill="#fdfdf2" stroke="#0c2233" stroke-width="1.5"/>
+    <g class="g-dim">
+      <line x1="430" y1="140" x2="430" y2="280"/><line x1="422" y1="140" x2="438" y2="140"/><line x1="422" y1="190" x2="438" y2="190"/><line x1="422" y1="280" x2="438" y2="280"/>
+    </g>
+    <text x="444" y="170" class="g-dm">≥ 1 м</text>
+    <text x="444" y="240" class="g-dm">≥ 2 м над корпуса</text>
+
+    <text x="640" y="24" text-anchor="middle" class="g-sl">две котвени светлини</text>
+    <rect x="530" y="280" width="230" height="30" fill="#dfe7ec" stroke="#0c2233" stroke-width="2"/>
+    <line x1="565" y1="280" x2="565" y2="150" stroke="#0c2233" stroke-width="3"/>
+    <line x1="725" y1="280" x2="725" y2="205" stroke="#0c2233" stroke-width="3"/>
+    <circle cx="565" cy="160" r="8" fill="#fdfdf2" stroke="#0c2233" stroke-width="1.5"/>
+    <circle cx="725" cy="215" r="8" fill="#fdfdf2" stroke="#0c2233" stroke-width="1.5"/>
+    <text x="565" y="140" text-anchor="middle" class="g-sm">предна</text>
+    <text x="725" y="196" text-anchor="middle" class="g-sm">задна</text>
+    <g class="g-dim">
+      <line x1="573" y1="160" x2="665" y2="160" stroke-dasharray="3 4"/><line x1="717" y1="215" x2="665" y2="215" stroke-dasharray="3 4"/>
+      <line x1="665" y1="160" x2="665" y2="215"/><line x1="657" y1="160" x2="673" y2="160"/><line x1="657" y1="215" x2="673" y2="215"/>
+    </g>
+    <text x="640" y="334" text-anchor="middle" class="g-dm">предната ≥ 4,5 м по-високо от задната</text>
+  </svg>
+  <figcaption><strong>Светлини една над друга.</strong> При котвени светлини на кораб от 50 м предната е най-малко 6 м над корпуса. Схемата не е в мащаб.</figcaption>
+</figure>
+
+<figure class="fig geo">
+  <svg viewBox="0 0 760 260" role="img" aria-label="Размери на дневните знаци" xmlns="http://www.w3.org/2000/svg">
+    <rect width="760" height="260" fill="#fff"/>
+    <text x="380" y="26" text-anchor="middle" class="g-sl">Знаците са черни. Вертикално един от друг: ≥ 1,5 м.</text>
+    <circle cx="95" cy="110" r="45" fill="#0b1620"/>
+    <polygon points="270,65 315,155 225,155" fill="#0b1620"/>
+    <rect x="428" y="45" width="45" height="90" fill="#0b1620"/>
+    <polygon points="635,45 680,90 590,90" fill="#0b1620"/>
+    <polygon points="635,135 680,90 590,90" fill="#0b1620"/>
+    <g class="g-dim"><line x1="50" y1="175" x2="140" y2="175"/><line x1="225" y1="175" x2="315" y2="175"/><line x1="428" y1="175" x2="473" y2="175"/><line x1="590" y1="175" x2="680" y2="175"/></g>
+    <g text-anchor="middle">
+      <text x="95" y="198" class="g-dm">сфера</text><text x="95" y="216" class="g-sm">Ø ≥ 0,6 м</text>
+      <text x="270" y="198" class="g-dm">конус</text><text x="270" y="216" class="g-sm">основа Ø ≥ 0,6 м</text><text x="270" y="232" class="g-sm">височина = Ø</text>
+      <text x="450" y="198" class="g-dm">цилиндър</text><text x="450" y="216" class="g-sm">Ø ≥ 0,6 м</text><text x="450" y="232" class="g-sm">височина = 2 × Ø</text>
+      <text x="635" y="198" class="g-dm">ромб</text><text x="635" y="216" class="g-sm">два конуса</text><text x="635" y="232" class="g-sm">с обща основа</text>
+    </g>
+  </svg>
+  <figcaption><strong>Размери на дневните знаци.</strong> На кораби под 20 м знаците може да са по-малки.</figcaption>
+</figure>
+
+<style>
+  .geo { max-width: 860px; margin: 1.2rem auto; }
+  .geo svg { max-height: none !important; background: #fff; }
+  .geo :global(.g-sl) { font: 600 13px 'IBM Plex Sans', sans-serif; fill: #0c2233; }
+  .geo :global(.g-dm) { font: 600 12px 'IBM Plex Sans', sans-serif; fill: #b00f5c; }
+  .geo :global(.g-sm) { font: 11.5px 'IBM Plex Sans', sans-serif; fill: #3d5565; }
+  .geo :global(.g-dim line) { stroke: #b00f5c; stroke-width: 1.5; }
+</style>

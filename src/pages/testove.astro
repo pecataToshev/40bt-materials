@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Quiz from '../components/Quiz.astro';
+import { bank, topics } from '../lib/bank';
+---
+<Base title="Тестове" description="Тестове по теми, изпитна симулация и повторение на грешните въпроси.">
+  <div class="wrap">
+    <h1>Тестове</h1>
+    <p>Всички {bank.length} въпроса от PDF-а. Грешните се помнят в браузъра ти и се повтарят в „Само грешните“.</p>
+    <h2>Повторение и изпит</h2>
+    <div class="quiz-grid"><Quiz title="Само грешните" mode="mistakes" /><Quiz title="Изпитна симулация: 60 въпроса" count={60} mode="exam" /></div>
+    <h2>По теми</h2>
+    <div class="quiz-grid">{Object.entries(topics).map(([k, v]) => <Quiz title={v} topic={k} count={10} />)}</div>
+  </div>
+</Base>

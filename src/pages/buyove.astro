@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import Quiz from '../components/Quiz.astro';
+import { buoySvg, cardinals, others, lateralA, lateralB } from '../lib/shapes';
+const sets: [string, string, typeof cardinals][] = [
+  ['Кардинални знаци', 'Показват откъде е безопасно да минеш. Кардиналът е на страната на света, на която е безопасната вода.', cardinals],
+  ['Други знаци', '', others],
+];
+---
+<Base title="Буйове и вехи" description="IALA Район A и B: странични, кардинални, отделна опасност, безопасни води, специални знаци.">
+  <div class="wrap">
+    <h1>Буйове и вехи (IALA)</h1>
+    <p>България е в <strong>Район A</strong>. Единствената разлика между районите е в цветовете на страничните знаци. Всички останали знаци са еднакви.</p>
+
+    <h2>Район A и Район B</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Знак</th><th>Район A (Европа, България)</th><th>Район B (Америка, Япония)</th></tr></thead>
+      <tbody>
+        <tr><td>Ляв борд при влизане в пристанище</td><td><strong style="color:#d3252b">червен</strong>, цилиндър</td><td><strong style="color:#1f9d4d">зелен</strong>, цилиндър</td></tr>
+        <tr><td>Десен борд при влизане в пристанище</td><td><strong style="color:#1f9d4d">зелен</strong>, конус</td><td><strong style="color:#d3252b">червен</strong>, конус</td></tr>
+        <tr><td>Кардинални, отделна опасност, безопасни води, специални</td><td colspan="2">Еднакви в двата района</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><p>Формата остава същата: цилиндър за левия борд, конус за десния. Сменят се само цветовете.</p></div>
+
+    <h2>Странични знаци: Район A</h2>
+    <div class="grid">{lateralA.map((b) => <figure class="fig"><Fragment set:html={buoySvg(b)} /><figcaption><strong>{b.title}</strong><span>{b.note}</span><br /><span>Светлина: {b.light}</span></figcaption></figure>)}</div>
+
+    <h2>Странични знаци: Район B</h2>
+    <div class="grid">{lateralB.map((b) => <figure class="fig"><Fragment set:html={buoySvg(b)} /><figcaption><strong>{b.title}</strong><span>{b.note}</span><br /><span>Светлина: {b.light}</span></figcaption></figure>)}</div>
+
+    {sets.map(([t, p, list]) => (
+      <>
+        <h2>{t}</h2>
+        {p && <p>{p}</p>}
+        <div class="grid">{list.map((b) => <figure class="fig"><Fragment set:html={buoySvg(b)} /><figcaption><strong>{b.title}</strong><span>{b.note}</span><br /><span>Светлина: {b.light}</span></figcaption></figure>)}</div>
+      </>
+    ))}
+
+    <div class="note warn"><p><strong>Запомни топмарките:</strong> Север = два конуса нагоре, Юг = два конуса надолу, Изток = основа до основа (ромб), Запад = връх до връх (пясъчен часовник). Върховете сочат към черното.</p><p><strong>Светлини:</strong> Север = непрекъснато. Изток = 3, Юг = 6 + дълъг, Запад = 9 (като часовник: 3, 6, 9).</p></div>
+
+    <h2>Тест</h2>
+    <Quiz title="Буйове и знаци" topic="buyove" count={10} />
+  </div>
+</Base>

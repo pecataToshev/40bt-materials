@@ -1,0 +1,80 @@
+---
+import '../styles/global.css';
+
+interface Props { title: string; description?: string; }
+const { title, description = 'Материали за подготовка за Водач на кораб до 40 БТ' } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname;
+const links = [
+  ['/svetlini/', 'Светлини'],
+  ['/denoshni-znaci/', 'Дневни знаци'],
+  ['/zvukovi-signali/', 'Звукови сигнали'],
+  ['/buyove/', 'Буйове и вехи'],
+  ['/vetrove/', 'Ветрове'],
+  ['/vremeto/', 'Времето'],
+  ['/globi/', 'Глоби и разпоредби'],
+  ['/koi-kom-kogo/', 'Кой отстъпва път'],
+  ['/testove/', 'Тестове'],
+];
+const isActive = (href: string) => path === base + href;
+---
+<!doctype html>
+<html lang="bg">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title === 'Водач до 40 БТ' ? title : `${title} · Водач до 40 БТ`}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&subset=cyrillic,latin&display=swap" rel="stylesheet" />
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('bt40-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href={`${base}/`}>40<span>БТ</span></a>
+        <details class="menu">
+          <summary>Меню<span class="cur">{links.find(([h]) => isActive(h))?.[1] ?? ''}</span></summary>
+          <nav class="menu-panel" aria-label="Теми">
+            {links.map(([href, label]) => (
+              <a href={`${base}${href}`} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
+            ))}
+          </nav>
+        </details>
+        <button class="theme-btn" id="theme-btn" type="button" aria-label="Смени светла и тъмна тема">Тема</button>
+      </div>
+    </header>
+    <div class="shell">
+      <nav class="side" aria-label="Теми">
+        {links.map(([href, label]) => (
+          <a href={`${base}${href}`} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
+        ))}
+      </nav>
+      <main class="content">
+        <slot />
+      </main>
+    </div>
+    <footer>
+      <div class="wrap">
+        Лични материали за подготовка по въпросите от 14.01.2016 (848 въпроса). Не е официален ресурс на ИА „Морска администрация“.
+        Схемите са нарисувани по правилата на МППСМ (COLREG) и не са копие от картинките в PDF-а. Провери ключа в учебния център преди изпита.
+      </div>
+    </footer>
+    <script is:inline>
+      document.getElementById('theme-btn').addEventListener('click', function () {
+        var root = document.documentElement;
+        var cur = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var next = cur === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('bt40-theme', next); } catch (e) {}
+      });
+    </script>
+  </body>
+</html>
