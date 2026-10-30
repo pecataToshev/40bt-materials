@@ -2,14 +2,51 @@
 import Base from '../layouts/Base.astro';
 import Quiz from '../components/Quiz.astro';
 import { bank, topics } from '../lib/bank';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Base title="Тестове" description="Тестове по теми, изпитна симулация и повторение на грешните въпроси.">
   <div class="wrap">
     <h1>Тестове</h1>
-    <p>Всички {bank.length} въпроса от PDF-а. Грешните се помнят в браузъра ти и се повтарят в „Само грешните“.</p>
-    <h2>Повторение и изпит</h2>
-    <div class="quiz-grid"><Quiz title="Само грешните" mode="mistakes" /><Quiz title="Изпитна симулация: 60 въпроса" count={60} mode="exam" /></div>
-    <h2>По теми</h2>
+    <p>Всички {bank.length} въпроса от PDF-а. Всеки тест се отваря в отделна страница. Отговорите във всеки въпрос се разбъркват. Грешните се помнят в браузъра ти.</p>
+    <h2>Изпит и повторение</h2>
+    <div class="quiz-grid">
+      <Quiz title="Изпитна симулация" mode="exam" count={60} />
+      <Quiz title="60 въпроса за упражнение" count={60} />
+      <Quiz title="Само грешните" mode="mistakes" />
+    </div>
+    <h2>Свой тест по няколко теми</h2>
+    <form class="builder" id="builder" data-base={base}>
+      <fieldset>
+        <legend>Теми</legend>
+        <label class="chk all"><input type="checkbox" id="all" /> Всички</label>
+        {Object.entries(topics).map(([k, v]) => <label class="chk"><input type="checkbox" name="t" value={k} /> {v}</label>)}
+      </fieldset>
+      <div class="builder-row">
+        <label>Въпроси
+          <select name="n"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option><option value="60">60</option><option value="0">Всички от темите</option></select>
+        </label>
+        <label>Режим
+          <select name="mode"><option value="learn">С верните отговори (без време)</option><option value="exam">Изпит: с време, без верните отговори</option></select>
+        </label>
+        <button class="btn" type="submit">Започни</button>
+      </div>
+      <p class="warn" id="bwarn"></p>
+    </form>
+    <h2>По една тема</h2>
     <div class="quiz-grid">{Object.entries(topics).map(([k, v]) => <Quiz title={v} topic={k} count={10} />)}</div>
   </div>
 </Base>
+<script>
+  const f = document.getElementById('builder') as HTMLFormElement;
+  const boxes = () => [...f.querySelectorAll<HTMLInputElement>('input[name=t]')];
+  const allBox = document.getElementById('all') as HTMLInputElement;
+  allBox.addEventListener('change', () => boxes().forEach((b) => (b.checked = allBox.checked)));
+  f.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const t = boxes().filter((b) => b.checked).map((b) => b.value);
+    if (!t.length) { document.getElementById('bwarn')!.textContent = 'Избери поне една тема.'; return; }
+    const d = new FormData(f);
+    const p = new URLSearchParams({ mode: String(d.get('mode')), t: t.join(','), n: String(d.get('n')), title: t.length === boxes().length ? 'Свой тест: всички теми' : `Свой тест: ${t.length} ${t.length === 1 ? 'тема' : 'теми'}` });
+    location.href = `${f.dataset.base}/test/?${p.toString()}`;
+  });
+</script>

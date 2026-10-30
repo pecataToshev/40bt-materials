@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import { bank, sceneFor } from '../lib/bank';
+const data = bank.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q, o: q.o, k: q.k, t: q.t, svg: sceneFor(q) ?? null }));
+---
+<Base title="Тест" description="Решаване на тест." focus>
+  <div class="runner" id="runner">
+    <noscript>Тестът изисква JavaScript.</noscript>
+  </div>
+  <script type="application/json" id="qdata" set:html={JSON.stringify(data)} />
+</Base>
+<script>
+  const KEY = 'bt40-mistakes';
+  const loadM = (): number[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+  const saveM = (a: number[]) => { try { localStorage.setItem(KEY, JSON.stringify([...new Set(a)])); } catch {} };
+  const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+  const L = ['А', 'Б', 'В', 'Г'];
+  type Q = { n: number; q: string; o: string[]; k: number; t: string; svg: string | null };
+  type Item = { q: Q; opts: { text: string; right: boolean }[]; pick: number | null };
+  const all: Q[] = JSON.parse(document.getElementById('qdata')!.textContent || '[]');
+  const root = document.getElementById('runner')!;
+  const params = new URLSearchParams(location.search);
+  const exam = params.get('mode') === 'exam';
+  const title = params.get('title') || 'Тест';
+  const count = Number(params.get('n') || 0);
+  const base = location.pathname.replace(/test\/?$/, '');
+
+  const shuffle = <T,>(a: T[]) => { a = [...a]; for (let j = a.length - 1; j > 0; j--) { const k = Math.floor(Math.random() * (j + 1)); [a[j], a[k]] = [a[k], a[j]]; } return a; };
+  // „Всички изброени“, „Нито едно…“ и разкъсани от PDF-а отговори (започват с малка буква) остават на място.
+  const pinRe = /^(всички изброени|нито едно|нито един|в нито едно)/i;
+  const noShuffle = new Set([67, 417, 419]);
+  const makeItem = (q: Q): Item => {
+    const opts = q.o.map((text, i) => ({ text, right: i === q.k }));
+    if (noShuffle.has(q.n) || q.o.some((x) => /^[а-я]/.test(x))) return { q, opts, pick: null };
+    const free = opts.map((_, i) => i).filter((i) => !pinRe.test(opts[i].text));
+    const order = shuffle(free);
+    const res = [...opts];
+    free.forEach((slot, x) => { res[slot] = opts[order[x]]; });
+    return { q, opts: res, pick: null };
+  };
+
+  function pool(): Q[] {
+    if (params.get('m')) { const m = loadM(); return all.filter((q) => m.includes(q.n)); }
+    const ids = params.get('ids');
+    if (ids) { const s = new Set(ids.split(',').map(Number)); return all.filter((q) => s.has(q.n)); }
+    const t = params.get('t');
+    if (t && t !== 'all') { const s = new Set(t.split(',')); return all.filter((q) => s.has(q.t)); }
+    return all;
+  }
+
+  let items: Item[] = [], cur = 0, t0 = 0, timer = 0, runTitle = title;
+  const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
+  function begin(src: Q[], label = title) {
+    runTitle = label;
+    if (!src.length) {
+      root.innerHTML = `<div class="rn-card"><h1>${esc(title)}</h1><p>Още нямаш записани грешки. Реши някой тест и грешните въпроси ще се появят тук.</p><a class="btn" href="${base}testove/">Към тестовете</a></div>`;
+      return;
+    }
+    const picked = shuffle(src).slice(0, count > 0 ? count : src.length);
+    items = picked.map(makeItem); cur = 0; t0 = Date.now();
+    clearInterval(timer);
+    if (exam) timer = window.setInterval(tick, 1000);
+    show();
+  }
+  const tick = () => { const el = document.getElementById('clock'); if (el) el.textContent = fmt(Math.floor((Date.now() - t0) / 1000)); };
+
+  function show() {
+    const it = items[cur];
+    const answered = items.filter((x) => x.pick !== null).length;
+    const revealed = !exam && it.pick !== null;
+    const dots = exam ? `<div class="dots">${items.map((x, i) => `<button type="button" data-i="${i}" class="${i === cur ? 'cur' : ''} ${x.pick !== null ? 'done' : ''}" aria-label="Въпрос ${i + 1}">${i + 1}</button>`).join('')}</div>` : '';
+    const last = cur === items.length - 1;
+    root.innerHTML = `
+      <div class="rn-top"><strong>${esc(runTitle)}</strong>
+        <span class="meta">${cur + 1} / ${items.length}${exam ? ` · отговорени ${answered}` : ''}</span>
+        ${exam ? `<span class="clock" id="clock">${fmt(Math.floor((Date.now() - t0) / 1000))}</span>` : ''}</div>
+      <div class="bar"><i style="width:${(cur / items.length) * 100}%"></i></div>
+      <div class="rn-card">
+        <p class="quiz-q">${esc(it.q.q)}</p>
+        ${it.q.svg ? `<div class="quiz-scene">${it.q.svg}</div>` : ''}
+        <div class="opts">${it.opts.map((o, j) => {
+          let c = 'opt';
+          if (exam) { if (it.pick === j) c += ' sel'; }
+          else if (revealed) { if (o.right) c += ' ok'; else if (it.pick === j) c += ' no'; }
+          return `<button type="button" class="${c}" data-j="${j}" ${revealed ? 'disabled' : ''}><span class="l">${L[j]}.</span> ${esc(o.text)}</button>`;
+        }).join('')}</div>
+        <div class="row">
+          ${exam ? `<button type="button" class="btn ghost prev" ${cur === 0 ? 'disabled' : ''}>← Назад</button>` : ''}
+          ${exam ? (last ? '<button type="button" class="btn fin">Приключи</button>' : '<button type="button" class="btn next">Напред →</button>')
+                 : (revealed ? `<button type="button" class="btn next">${last ? 'Резултат' : 'Следващ →'}</button>` : '')}
+        </div>
+        <div class="warn" id="warn"></div>
+      </div>${dots}`;
+    root.querySelectorAll<HTMLButtonElement>('.opt').forEach((b) => b.addEventListener('click', () => pick(Number(b.dataset.j))));
+    root.querySelector('.next')?.addEventListener('click', () => { if (!exam && last) finish(); else { cur++; show(); window.scrollTo(0, 0); } });
+    root.querySelector('.prev')?.addEventListener('click', () => { cur--; show(); window.scrollTo(0, 0); });
+    root.querySelector('.fin')?.addEventListener('click', () => {
+      const miss = items.filter((x) => x.pick === null).length;
+      if (!miss) return finish();
+      document.getElementById('warn')!.innerHTML = `Има ${miss} без отговор (броят се за грешни). <button type="button" class="btn ghost sure">Приключи въпреки това</button>`;
+      root.querySelector('.sure')!.addEventListener('click', finish);
+    });
+    root.querySelectorAll<HTMLButtonElement>('.dots button').forEach((b) => b.addEventListener('click', () => { cur = Number(b.dataset.i); show(); }));
+  }
+
+  function pick(j: number) {
+    const it = items[cur];
+    it.pick = j;
+    if (!exam) {
+      const m = loadM();
+      if (it.opts[j].right) { if (params.get('m')) saveM(m.filter((n) => n !== it.q.n)); } else saveM([...m, it.q.n]);
+    }
+    show();
+  }
+
+  function finish() {
+    clearInterval(timer);
+    const secs = Math.floor((Date.now() - t0) / 1000);
+    const wrong = items.filter((x) => x.pick === null || !x.opts[x.pick].right);
+    const right = items.length - wrong.length;
+    if (exam) {
+      let m = loadM();
+      for (const it of items) {
+        const ok = it.pick !== null && it.opts[it.pick].right;
+        if (ok) { if (params.get('m')) m = m.filter((n) => n !== it.q.n); } else m.push(it.q.n);
+      }
+      saveM(m);
+    }
+    const pct = Math.round((right / items.length) * 100);
+    root.innerHTML = `
+      <div class="rn-card">
+        <h1>${esc(runTitle)}</h1>
+        <div class="score">${right} / ${items.length} (${pct}%)</div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        ${exam ? `<p class="meta">Време: ${fmt(secs)}</p>` : ''}
+        <div class="row">
+          ${wrong.length ? `<button type="button" class="btn rev">Виж грешните (${wrong.length})</button><button type="button" class="btn ghost redo">Повтори грешните</button>` : '<p>Няма грешки. Браво!</p>'}
+          <button type="button" class="btn ghost again">Нов тест</button>
+          <a class="btn ghost" href="${base}testove/">Към тестовете</a>
+        </div>
+      </div>
+      <div id="review"></div>`;
+    root.querySelector('.again')!.addEventListener('click', () => begin(pool(), title));
+    root.querySelector('.redo')?.addEventListener('click', () => begin(wrong.map((x) => x.q), 'Повторение на грешните'));
+    root.querySelector('.rev')?.addEventListener('click', () => {
+      const box = document.getElementById('review')!;
+      box.innerHTML = wrong.map((it) => `
+        <div class="rn-card rv">
+          <p class="meta">Въпрос № ${it.q.n}</p>
+          <p class="quiz-q">${esc(it.q.q)}</p>
+          ${it.q.svg ? `<div class="quiz-scene">${it.q.svg}</div>` : ''}
+          <div class="opts">${it.opts.map((o, j) => `<div class="opt ${o.right ? 'ok' : it.pick === j ? 'no' : ''}"><span class="l">${L[j]}.</span> ${esc(o.text)}${o.right ? ' ✓' : it.pick === j ? ' (твоят отговор)' : ''}</div>`).join('')}</div>
+          ${it.pick === null ? '<p class="meta">Без отговор.</p>' : ''}
+        </div>`).join('');
+      box.scrollIntoView({ behavior: 'smooth' });
+    });
+    window.scrollTo(0, 0);
+  }
+
+  begin(pool());
+</script>

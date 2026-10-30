@@ -1,8 +1,8 @@
 ---
 import '../styles/global.css';
 
-interface Props { title: string; description?: string; }
-const { title, description = 'Материали за подготовка за Водач на кораб до 40 БТ' } = Astro.props;
+interface Props { title: string; description?: string; focus?: boolean; }
+const { title, description = 'Материали за подготовка за Водач на кораб до 40 БТ', focus = false } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const path = Astro.url.pathname;
@@ -36,37 +36,37 @@ const isActive = (href: string) => path === base + href;
       } catch (e) {}
     </script>
   </head>
-  <body>
+  <body class={focus ? 'focus' : undefined}>
     <header class="topbar">
       <div class="topbar-inner">
         <a class="brand" href={`${base}/`}>40<span>БТ</span></a>
-        <details class="menu">
+        {focus ? <a class="exit" href={`${base}/testove/`}>← Към тестовете</a> : <details class="menu">
           <summary>Меню<span class="cur">{links.find(([h]) => isActive(h))?.[1] ?? ''}</span></summary>
           <nav class="menu-panel" aria-label="Теми">
             {links.map(([href, label]) => (
               <a href={`${base}${href}`} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
             ))}
           </nav>
-        </details>
+        </details>}
         <button class="theme-btn" id="theme-btn" type="button" aria-label="Смени светла и тъмна тема">Тема</button>
       </div>
     </header>
-    <div class="shell">
-      <nav class="side" aria-label="Теми">
+    <div class={focus ? 'shell-focus' : 'shell'}>
+      {!focus && <nav class="side" aria-label="Теми">
         {links.map(([href, label]) => (
           <a href={`${base}${href}`} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
         ))}
-      </nav>
+      </nav>}
       <main class="content">
         <slot />
       </main>
     </div>
-    <footer>
+    {!focus && <footer>
       <div class="wrap">
         Лични материали за подготовка по въпросите от 14.01.2016 (848 въпроса). Не е официален ресурс на ИА „Морска администрация“.
         Схемите са нарисувани по правилата на МППСМ (COLREG) и не са копие от картинките в PDF-а. Провери ключа в учебния център преди изпита.
       </div>
-    </footer>
+    </footer>}
     <script is:inline>
       document.getElementById('theme-btn').addEventListener('click', function () {
         var root = document.documentElement;
