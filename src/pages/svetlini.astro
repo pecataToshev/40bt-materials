@@ -23,6 +23,33 @@ const dayFor: Record<string, string> = {
   trawl: 'd-hourglass', trawl50: 'd-hourglass', fish: 'd-hourglass', 'fish-rest': 'd-hourglass', 'fish-gear': 'd-hourglass',
 };
 const dayById = new Map(dayScenes.map((d) => [d.id, d]));
+// Допълнителни дневни карти, които се залепват към семейство със същия дневен знак
+const extraNear: Record<string, string> = { 'd-ram-anchor': 'd-ram', 'd-flagA': 'd-ram' };
+type Card = { kind: 'night'; id: string; day?: string } | { kind: 'day'; id: string; shared: boolean };
+// Нощните карти с общ дневен знак са на един ред, а дневният знак е последен в същия ред.
+function segments(ids: string[], extra: string[]): Card[][] {
+  const used = ids.map((id) => dayFor[id]).filter(Boolean);
+  const shared = new Set(used.filter((d) => used.filter((x) => x === d).length > 1));
+  const out: Card[][] = [];
+  let plain: Card[] = [];
+  const flush = () => { if (plain.length) out.push(plain); plain = []; };
+  const done = new Set<string>();
+  for (const id of ids) {
+    const k = dayFor[id];
+    if (k && shared.has(k)) {
+      if (done.has(k)) continue;
+      done.add(k); flush();
+      const row: Card[] = ids.filter((x) => dayFor[x] === k).map((x) => ({ kind: 'night', id: x }));
+      row.push({ kind: 'day', id: k, shared: true });
+      for (const e of extra) if (extraNear[e] === k) row.push({ kind: 'day', id: e, shared: false });
+      out.push(row);
+    } else plain.push({ kind: 'night', id, day: k });
+  }
+  flush();
+  const rest = extra.filter((e) => !(extraNear[e] && shared.has(extraNear[e])));
+  if (rest.length) out.push(rest.map((e) => ({ kind: 'day', id: e, shared: false })));
+  return out;
+}
 const cx = 230, cy = 230;
 const pt = (a: number, r: number) => { const t = (a * Math.PI) / 180; return [cx + r * Math.sin(t), cy - r * Math.cos(t)]; };
 const wedge = (a1: number, a2: number, r: number, fill: string, op = 0.75) => {
@@ -107,23 +134,32 @@ const byId = new Map(scenes.map((s) => [s.id, s]));
     {groups.map(([title, ids, extra]) => (
       <>
         <h2>{title}</h2>
-        <div class="grid pairs">
-          {ids.map((id) => { const s = byId.get(id); const d = dayFor[id] ? dayById.get(dayFor[id]) : undefined; return s ? (
-            <figure class={`fig${d ? ' has-day' : ''}`}>
-              <div class="pair">
-                <div class="pane"><span class="pane-l">Нощем</span><Fragment set:html={sceneSvg(id)} /></div>
-                {d && <div class="pane"><span class="pane-l">Денем</span><Fragment set:html={d.svg()} /></div>}
-              </div>
-              <figcaption><strong>{s.title}</strong><span>{s.note}</span>{d && <span class="day-note"><b>Денем:</b> {d.note}</span>}</figcaption>
-            </figure>
-          ) : null; })}
-          {extra.map((id) => { const d = dayById.get(id)!; return (
-            <figure class="fig has-day">
-              <div class="pair"><div class="pane"><span class="pane-l">Денем</span><Fragment set:html={d.svg()} /></div></div>
-              <figcaption><strong>{d.title}</strong><span>{d.note}</span></figcaption>
-            </figure>
-          ); })}
-        </div>
+        {segments(ids, extra).map((row) => (
+          <div class="grid pairs">
+            {row.map((c) => {
+              if (c.kind === 'night') {
+                const s = byId.get(c.id); if (!s) return null;
+                const d = c.day ? dayById.get(c.day) : undefined;
+                return (
+                  <figure class={`fig${d ? ' has-day' : ''}`}>
+                    <div class="pair">
+                      <div class="pane"><span class="pane-l">Нощем</span><Fragment set:html={sceneSvg(c.id)} /></div>
+                      {d && <div class="pane"><span class="pane-l">Денем</span><Fragment set:html={d.svg()} /></div>}
+                    </div>
+                    <figcaption><strong>{s.title}</strong><span>{s.note}</span>{d && <span class="day-note"><b>Денем:</b> {d.note}</span>}</figcaption>
+                  </figure>
+                );
+              }
+              const d = dayById.get(c.id)!;
+              return (
+                <figure class="fig has-day">
+                  <div class="pair"><div class="pane"><span class="pane-l">Денем</span><Fragment set:html={d.svg()} /></div></div>
+                  <figcaption><strong>{d.title}</strong><span>{d.note}</span>{c.shared && <span class="day-note">Един знак през деня за светлините от този ред.</span>}</figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        ))}
       </>
     ))}
 
