@@ -270,3 +270,7 @@ footer .wrap { padding-block: 1.5rem; }
 .rv .opt { cursor: default; }
 .btn:disabled { opacity: 0.4; cursor: default; }
 a.btn { text-decoration: none; display: inline-block; }
+
+.quiz-scene:has(img) { max-width: 100%; width: fit-content; background: #fff; }
+.quiz-scene img { display: block; max-width: 100%; height: auto; image-rendering: auto; }
+.opt-img { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 4px; }

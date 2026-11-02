@@ -1,7 +1,7 @@
 import raw from '../data/questions.json';
 import { sceneSvg } from './scenes';
 
-export interface Q { n: number; t: string; q: string; o: string[]; k: number; s?: string; }
+export interface Q { n: number; t: string; q: string; o: string[]; k: number; s?: string; img?: string; oimg?: (string | null)[]; }
 export const bank = raw as unknown as Q[];
 export const byN = new Map(bank.map((q) => [q.n, q]));
 
@@ -38,6 +38,12 @@ export const mistakes: { n: number; wrong: number; why: string }[] = [
   { n: 401, wrong: 0, why: 'Схема за разделно движение: движи се в коридора в общата посока. Не се влиза в зоната на разделяне.' },
 ];
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+export const qImg = (f: string) => `${BASE}/q/${f}`;
+
+/** Картинка към въпроса: нарисувана от мен схема, иначе оригиналната от PDF-а. */
 export function sceneFor(q: Q): string | undefined {
-  return q.s ? sceneSvg(q.s) : undefined;
+  if (q.s) return sceneSvg(q.s);
+  if (q.img) return `<img src="${qImg(q.img)}" alt="Картинка към въпрос ${q.n}" loading="lazy" decoding="async">`;
+  return undefined;
 }

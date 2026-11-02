@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import { bank, sceneFor } from '../lib/bank';
-const data = bank.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q, o: q.o, k: q.k, t: q.t, svg: sceneFor(q) ?? null }));
+import { bank, sceneFor, qImg } from '../lib/bank';
+const data = bank.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q, o: q.o, k: q.k, t: q.t, svg: sceneFor(q) ?? null, oi: q.oimg ? q.oimg.map((f) => (f ? qImg(f) : null)) : null }));
 ---
 <Base title="Тест" description="Решаване на тест." focus>
   <div class="runner" id="runner">
@@ -15,8 +15,8 @@ const data = bank.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q
   const saveM = (a: number[]) => { try { localStorage.setItem(KEY, JSON.stringify([...new Set(a)])); } catch {} };
   const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
   const L = ['А', 'Б', 'В', 'Г'];
-  type Q = { n: number; q: string; o: string[]; k: number; t: string; svg: string | null };
-  type Item = { q: Q; opts: { text: string; right: boolean }[]; pick: number | null };
+  type Q = { n: number; q: string; o: string[]; k: number; t: string; svg: string | null; oi: (string | null)[] | null };
+  type Item = { q: Q; opts: { text: string; right: boolean; img: string | null }[]; pick: number | null };
   const all: Q[] = JSON.parse(document.getElementById('qdata')!.textContent || '[]');
   const root = document.getElementById('runner')!;
   const params = new URLSearchParams(location.search);
@@ -30,14 +30,16 @@ const data = bank.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q
   const pinRe = /^(всички изброени|нито едно|нито един|в нито едно)/i;
   const noShuffle = new Set([67, 417, 419]);
   const makeItem = (q: Q): Item => {
-    const opts = q.o.map((text, i) => ({ text, right: i === q.k }));
-    if (noShuffle.has(q.n) || q.o.some((x) => /^[а-я]/.test(x))) return { q, opts, pick: null };
+    const opts = q.o.map((text, i) => ({ text, right: i === q.k, img: q.oi?.[i] ?? null }));
+    if (q.oi || noShuffle.has(q.n) || q.o.some((x) => /^[а-я]/.test(x))) return { q, opts, pick: null };
     const free = opts.map((_, i) => i).filter((i) => !pinRe.test(opts[i].text));
     const order = shuffle(free);
     const res = [...opts];
     free.forEach((slot, x) => { res[slot] = opts[order[x]]; });
     return { q, opts: res, pick: null };
   };
+
+  const optBody = (o: { text: string; img: string | null }) => (o.img ? `<img class="opt-img" src="${o.img}" alt="">` : '') + (o.img && (o.text === '(виж картинката)' || /^\d+\.?$/.test(o.text)) ? '' : esc(o.text));
 
   function pool(): Q[] {
     if (params.get('m')) { const m = loadM(); return all.filter((q) => m.includes(q.n)); }
@@ -83,7 +85,7 @@ const data = bank.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q
           let c = 'opt';
           if (exam) { if (it.pick === j) c += ' sel'; }
           else if (revealed) { if (o.right) c += ' ok'; else if (it.pick === j) c += ' no'; }
-          return `<button type="button" class="${c}" data-j="${j}" ${revealed ? 'disabled' : ''}><span class="l">${L[j]}.</span> ${esc(o.text)}</button>`;
+          return `<button type="button" class="${c}" data-j="${j}" ${revealed ? 'disabled' : ''}><span class="l">${L[j]}.</span> ${optBody(o)}</button>`;
         }).join('')}</div>
         <div class="row">
           ${exam ? `<button type="button" class="btn ghost prev" ${cur === 0 ? 'disabled' : ''}>← Назад</button>` : ''}
@@ -150,7 +152,7 @@ const data = bank.filter((q) => q.o.every(Boolean)).map((q) => ({ n: q.n, q: q.q
           <p class="meta">Въпрос № ${it.q.n}</p>
           <p class="quiz-q">${esc(it.q.q)}</p>
           ${it.q.svg ? `<div class="quiz-scene">${it.q.svg}</div>` : ''}
-          <div class="opts">${it.opts.map((o, j) => `<div class="opt ${o.right ? 'ok' : it.pick === j ? 'no' : ''}"><span class="l">${L[j]}.</span> ${esc(o.text)}${o.right ? ' ✓' : it.pick === j ? ' (твоят отговор)' : ''}</div>`).join('')}</div>
+          <div class="opts">${it.opts.map((o, j) => `<div class="opt ${o.right ? 'ok' : it.pick === j ? 'no' : ''}"><span class="l">${L[j]}.</span> ${optBody(o)}${o.right ? ' ✓' : it.pick === j ? ' (твоят отговор)' : ''}</div>`).join('')}</div>
           ${it.pick === null ? '<p class="meta">Без отговор.</p>' : ''}
         </div>`).join('');
       box.scrollIntoView({ behavior: 'smooth' });
