@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Quiz from './Quiz.astro';
+import QaSection from './QaSection.astro';
+import NavGuide from './NavGuide.astro';
+import { expand, studyPages } from '../lib/study';
+interface Props { slug: string; }
+const page = studyPages.find((p) => p.slug === Astro.props.slug)!;
+const all = page.sections.flatMap((s) => expand(s.ids));
+---
+<Base title={page.title} description={page.desc}>
+  <div class="wrap">
+    <h1>{page.title}</h1>
+    <p>{page.desc} Това са верните отговори от изпитния ключ, подредени по теми. Провери ги спрямо учебните материали.</p>
+    <nav class="toc" aria-label="Раздели">
+      {page.sections.map((s, i) => <a href={`#s${i}`}>{s.title}</a>)}
+    </nav>
+    {page.slug === 'navigacia' && (
+      <Fragment>
+        <h2>Курс, пеленг и поправка накратко</h2>
+        <NavGuide />
+        <div class="table-wrap"><table>
+          <thead><tr><th>Какво</th><th>Формула или определение</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ИК</strong> истински курс</td><td>Ъгъл между северната част на меридиана и посоката на движение. От 0° до 360°. Това се нанася на пътевата карта.</td></tr>
+            <tr><td><strong>ИП</strong> истински пеленг</td><td>Ъгъл между северната част на меридиана и посоката към предмета</td></tr>
+            <tr><td><strong>КЪ</strong> курсов ъгъл</td><td>Ъгъл между диаметралната равнина на кораба и посоката към предмета. От 0° до 180° към ляв или десен борд.</td></tr>
+            <tr><td>ИП от ИК и КЪ</td><td>ИП = ИК + КЪ (десен борд) или ИП = ИК − КЪ (ляв борд)</td></tr>
+            <tr><td><strong>d</strong> магнитно склонение</td><td>Отклонение на стрелката от земното магнитно поле. Знак и стойност се вземат от картата за района.</td></tr>
+            <tr><td><strong>δ</strong> девиация</td><td>Отклонение от корабното магнитно поле. Взема се от таблицата за девиация, променя се с курса на кораба и се определя ежегодно.</td></tr>
+            <tr><td><strong>ΔК</strong> обща поправка</td><td>ΔК = (± d) + (± δ), алгебричен сбор от склонението и девиацията</td></tr>
+            <tr><td>Компасният курс (КК)</td><td>КК = МК + (± δ)</td></tr>
+            <tr><td>Истински курс от компасния</td><td>ИК = КК + (± ΔК)</td></tr>
+            <tr><td>Истински пеленг от компасния</td><td>ИП = КП + (± ΔК)</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2>Мерки и разстояния накратко</h2>
+        <div class="table-wrap"><table>
+          <tbody>
+            <tr><th>Морска миля</th><td>1 852 м. Една миля от картата е 1 минута от географската ширина.</td></tr>
+            <tr><th>Кабелт</th><td>185 м</td></tr>
+            <tr><th>Възел</th><td>Една миля за един час. 7 възела за 2 часа: 14 мили.</td></tr>
+            <tr><th>Фут</th><td>0,3048 м</td></tr>
+            <tr><th>Сажен</th><td>1,828 м. Не се ползва в съвременното корабоплаване.</td></tr>
+            <tr><th>Мащаб 1:150 000</th><td>1 см от картата е 1,5 км от местността</td></tr>
+            <tr><th>Румб</th><td>Един румб е 11¼°. Румбовата система дели хоризонта на 32 части.</td></tr>
+            <tr><th>Безопасно разминаване</th><td>Минимум 20 кабелта, според добрата морска практика</td></tr>
+            <tr><th>Ортодромия и локсодромия</th><td>Ортодромията е най-късата дъга между две точки на земното кълбо. Локсодромията е спираловидна крива, която пресича всички меридиани под еднакъв ъгъл.</td></tr>
+          </tbody>
+        </table></div>
+      </Fragment>
+    )}
+    {page.sections.map((s, i) => <div id={`s${i}`}><QaSection title={s.title} intro={s.intro} ids={s.ids} /></div>)}
+    <h2>Тест</h2>
+    <Quiz title={page.title} ids={all} count={20} />
+  </div>
+</Base>

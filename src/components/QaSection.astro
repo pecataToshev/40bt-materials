@@ -1,0 +1,43 @@
+---
+import { bank, byN, qImg } from '../lib/bank';
+import { expand, type Ids } from '../lib/study';
+interface Props { title: string; intro?: string; ids: Ids; level?: 2 | 3; }
+const { title, intro, ids, level = 2 } = Astro.props;
+const norm = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
+const allRe = /^всичко изброено|^всички изброени/i;
+const items: { q: string; img?: string; answers: { text: string; img?: string; list?: string[] }[] }[] = [];
+for (const n of expand(ids)) {
+  const v = byN.get(n);
+  if (!v || v.k == null) continue;
+  const text = v.o[v.k];
+  const ans: { text: string; img?: string; list?: string[] } = { text };
+  if (allRe.test(text)) ans.list = v.o.filter((_, i) => i !== v.k && !/^(всичко|всички) изброени/i.test(v.o[i]) && v.o[i]);
+  if (v.oimg?.[v.k]) ans.img = qImg(v.oimg[v.k]!);
+  const last = items[items.length - 1];
+  if (last && !last.img && !v.img && norm(last.q) === norm(v.q)) last.answers.push(ans);
+  else items.push({ q: v.q, img: v.img ? qImg(v.img) : undefined, answers: [ans] });
+}
+const H = level === 3 ? 'h3' : 'h2';
+---
+<Fragment>
+  <H>{title}</H>
+  {intro && <p>{intro}</p>}
+  <div class="qa-list">
+    {items.map((it) => (
+      <div class="qa">
+        {it.img && <img class="qa-img" src={it.img} alt="" decoding="async" />}
+        <div class="qa-body">
+          <p class="qa-q">{it.q}</p>
+          <ul class="qa-a">
+            {it.answers.map((a) => (
+              <li>
+                {a.img && <img class="qa-aimg" src={a.img} alt="" />}
+                {a.list ? <Fragment>Всичко изброено: <span>{a.list.join(' ')}</span></Fragment> : a.text === '(виж картинката)' ? null : a.text}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    ))}
+  </div>
+</Fragment>

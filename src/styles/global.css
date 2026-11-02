@@ -274,3 +274,18 @@ a.btn { text-decoration: none; display: inline-block; }
 .quiz-scene:has(img) { max-width: 100%; width: fit-content; background: #fff; }
 .quiz-scene img { display: block; max-width: 100%; height: auto; image-rendering: auto; }
 .opt-img { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 4px; }
+
+/* Материали по въпросите от изпита */
+.toc { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0 1.4rem; }
+.toc a { font-size: 0.82rem; padding: 0.25rem 0.6rem; border: 1px solid var(--line); border-radius: 99px; text-decoration: none; color: var(--muted); background: var(--surface); }
+.toc a:hover { color: var(--ink); border-color: var(--teal); }
+.qa-list { display: grid; gap: 0.6rem; margin: 0.8rem 0 1.4rem; max-width: 820px; }
+.qa { display: flex; gap: 1rem; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem 1rem; min-width: 0; }
+.qa-img { width: 150px; max-width: 40%; height: auto; flex: none; background: #fff; border-radius: 6px; }
+.qa-body { min-width: 0; flex: 1; }
+.qa-q { margin: 0 0 0.35rem; font-weight: 600; max-width: none; }
+.qa-a { margin: 0; padding-left: 1.1rem; }
+.qa-a li { margin: 0.15rem 0; }
+.qa-a li::marker { color: var(--good); }
+.qa-aimg { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 4px; margin: 0.2rem 0; }
+@media (max-width: 560px) { .qa { flex-direction: column; } .qa-img { max-width: 70%; } }
