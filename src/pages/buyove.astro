@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Quiz from '../components/Quiz.astro';
-import { buoySvg, cardinals, others, lateralA, lateralB } from '../lib/shapes';
+import { buoySvg, cardinals, others, lateralA, lateralB, topmarkScenes } from '../lib/shapes';
 const sets: [string, string, typeof cardinals][] = [
   ['Кардинални знаци', 'Показват откъде е безопасно да минеш. Кардиналът е на страната на света, на която е безопасната вода.', cardinals],
   ['Други знаци', '', others],
@@ -38,6 +38,14 @@ const sets: [string, string, typeof cardinals][] = [
     ))}
 
     <div class="note warn"><p><strong>Запомни топмарките:</strong> Север = два конуса нагоре, Юг = два конуса надолу, Изток = основа до основа (ромб), Запад = връх до връх (пясъчен часовник). Върховете сочат към черното.</p><p><strong>Светлини:</strong> Север = непрекъснато. Изток = 3, Юг = 6 + дълъг, Запад = 9 (като часовник: 3, 6, 9).</p></div>
+
+    <h2>Топмарки на кардиналните знаци</h2>
+    <p>Върховете на конусите сочат към черното на знака. Горе-горе значи Север, долу-долу значи Юг.</p>
+    <div class="grid">
+      {topmarkScenes.map((t) => (
+        <figure class="fig"><Fragment set:html={t.svg()} /><figcaption><strong>{t.title}</strong><span>{t.note}</span></figcaption></figure>
+      ))}
+    </div>
 
     <h2>Тест</h2>
     <Quiz title="Буйове и знаци" topic="buyove" count={10} />

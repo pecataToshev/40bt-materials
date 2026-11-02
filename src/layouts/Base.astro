@@ -7,14 +7,17 @@ const { title, description = 'Материали за подготовка за 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const path = Astro.url.pathname;
 const links = [
-  ['/svetlini/', 'Светлини'],
-  ['/dnevni-znaci/', 'Дневни знаци'],
+  ['/svetlini/', 'Светлини и дневни знаци'],
   ['/zvukovi-signali/', 'Звукови сигнали'],
   ['/buyove/', 'Буйове и вехи'],
   ['/vetrove/', 'Ветрове'],
   ['/vremeto/', 'Времето'],
   ['/globi/', 'Глоби и разпоредби'],
   ['/koi-kom-kogo/', 'Кой отстъпва път'],
+  ['/ustroystvo/', 'Устройство'],
+  ['/dvigateli/', 'Двигатели'],
+  ['/navigacia/', 'Навигация и карти'],
+  ['/flagove/', 'Флагове'],
   ['/testove/', 'Тестове'],
 ];
 const isActive = (href: string) => path === base + href;

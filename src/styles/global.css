@@ -289,3 +289,12 @@ a.btn { text-decoration: none; display: inline-block; }
 .qa-a li::marker { color: var(--good); }
 .qa-aimg { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 4px; margin: 0.2rem 0; }
 @media (max-width: 560px) { .qa { flex-direction: column; } .qa-img { max-width: 70%; } }
+
+/* Нощни светлини и дневни знаци в една карта */
+.grid.pairs { grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
+.pane { position: relative; min-width: 0; }
+.pane + .pane { border-left: 2px solid var(--line); }
+.pane-l { position: absolute; top: 6px; left: 8px; z-index: 1; font: 600 0.68rem var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: #fff; background: rgba(10, 20, 30, 0.65); padding: 0.1rem 0.4rem; border-radius: 4px; }
+.pane svg { width: 100%; }
+.fig .day-note { display: block; margin-top: 0.3rem; color: var(--ink); }

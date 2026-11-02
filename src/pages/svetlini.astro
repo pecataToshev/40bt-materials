@@ -1,16 +1,28 @@
 ---
 import Base from '../layouts/Base.astro';
 import Quiz from '../components/Quiz.astro';
+import QaSection from '../components/QaSection.astro';
 import LightsGeometry from '../components/LightsGeometry.astro';
 import { scenes, trawlerExtra, lightsSvg, sceneSvg } from '../lib/scenes';
-const groups: [string, string[]][] = [
-  ['Други моторни и малки кораби', ['small7', 'hover', 'wig']],
-  ['Ветроходни кораби', ['sail-bow', 'sail-opt', 'sail-small', 'sail-stern']],
-  ['Влачене и тласкане', ['tow-bow', 'tow-bow200', 'tow-stern', 'towed', 'push', 'tow-obj2', 'tow-obj4', 'tow-obj5']],
-  ['На котва и заседнали', ['anchor-small', 'anchor-big', 'aground-small', 'aground-big']],
-  ['Ограничена маневреност', ['nuc', 'nuc-way', 'ram', 'ram-way', 'cbd', 'dredge', 'mines', 'pilot']],
-  ['Риболовни кораби', ['trawl', 'trawl50', 'fish', 'fish-rest', 'fish-gear']],
+import { dayScenes } from '../lib/shapes';
+const groups: [string, string[], string[]][] = [
+  ['Други моторни и малки кораби', ['small7', 'hover', 'wig'], []],
+  ['Ветроходни кораби', ['sail-bow', 'sail-opt', 'sail-small', 'sail-stern'], ['d-cone-down']],
+  ['Влачене и тласкане', ['tow-bow', 'tow-bow200', 'tow-stern', 'towed', 'push', 'tow-obj2', 'tow-obj4', 'tow-obj5'], []],
+  ['На котва и заседнали', ['anchor-small', 'anchor-big', 'aground-small', 'aground-big'], []],
+  ['Ограничена маневреност', ['nuc', 'nuc-way', 'ram', 'ram-way', 'cbd', 'dredge', 'mines', 'pilot'], ['d-ram-anchor', 'd-flagA']],
+  ['Риболовни кораби', ['trawl', 'trawl50', 'fish', 'fish-rest', 'fish-gear'], []],
 ];
+// Кой дневен знак върви със светлините (нощна схема -> дневна схема)
+const dayFor: Record<string, string> = {
+  'anchor-small': 'd-ball1', 'anchor-big': 'd-ball1',
+  'aground-small': 'd-3balls', 'aground-big': 'd-3balls',
+  nuc: 'd-2balls', 'nuc-way': 'd-2balls',
+  ram: 'd-ram', 'ram-way': 'd-ram', dredge: 'd-dredge', cbd: 'd-cyl', mines: 'd-mines',
+  'tow-bow200': 'd-diamond',
+  trawl: 'd-hourglass', trawl50: 'd-hourglass', fish: 'd-hourglass', 'fish-rest': 'd-hourglass', 'fish-gear': 'd-hourglass',
+};
+const dayById = new Map(dayScenes.map((d) => [d.id, d]));
 const cx = 230, cy = 230;
 const pt = (a: number, r: number) => { const t = (a * Math.PI) / 180; return [cx + r * Math.sin(t), cy - r * Math.cos(t)]; };
 const wedge = (a1: number, a2: number, r: number, fill: string, op = 0.75) => {
@@ -28,9 +40,9 @@ const sectorSvg =
   txt(0, 168, 'топова 225°') + txt(180, 168, 'кърмова / влекаща 135°');
 const byId = new Map(scenes.map((s) => [s.id, s]));
 ---
-<Base title="Светлини" description="Навигационни светлини по МППСМ (COLREG) с нарисувани нощни схеми.">
+<Base title="Светлини и дневни знаци" description="Навигационни светлини по МППСМ (COLREG) с нощни схеми и дневните знаци до тях.">
   <div class="wrap">
-    <h1>Светлини на корабите</h1>
+    <h1>Светлини и дневни знаци</h1>
     <p>Схемите показват как изглежда корабът нощем отпред (освен ако не е посочено друго). Всички са нарисувани по правилата 20–31 на МППСМ. Не са копия от картинките в PDF-а.</p>
 
     <h2>Видимост и сектори</h2>
@@ -91,13 +103,26 @@ const byId = new Map(scenes.map((s) => [s.id, s]));
       </>
     ))}
 
-    {groups.map(([title, ids]) => (
+    <p class="note"><strong>Нощем и денем.</strong> Където кораб показва през деня фигури (сфери, конуси, цилиндър, ромб), до светлините е показан и дневният му знак.</p>
+    {groups.map(([title, ids, extra]) => (
       <>
         <h2>{title}</h2>
-        <div class="grid">
-          {ids.map((id) => { const s = byId.get(id); return s ? (
-            <figure class="fig"><Fragment set:html={sceneSvg(id)} /><figcaption><strong>{s.title}</strong><span>{s.note}</span></figcaption></figure>
+        <div class="grid pairs">
+          {ids.map((id) => { const s = byId.get(id); const d = dayFor[id] ? dayById.get(dayFor[id]) : undefined; return s ? (
+            <figure class={`fig${d ? ' has-day' : ''}`}>
+              <div class="pair">
+                <div class="pane"><span class="pane-l">Нощем</span><Fragment set:html={sceneSvg(id)} /></div>
+                {d && <div class="pane"><span class="pane-l">Денем</span><Fragment set:html={d.svg()} /></div>}
+              </div>
+              <figcaption><strong>{s.title}</strong><span>{s.note}</span>{d && <span class="day-note"><b>Денем:</b> {d.note}</span>}</figcaption>
+            </figure>
           ) : null; })}
+          {extra.map((id) => { const d = dayById.get(id)!; return (
+            <figure class="fig has-day">
+              <div class="pair"><div class="pane"><span class="pane-l">Денем</span><Fragment set:html={d.svg()} /></div></div>
+              <figcaption><strong>{d.title}</strong><span>{d.note}</span></figcaption>
+            </figure>
+          ); })}
         </div>
       </>
     ))}
@@ -116,6 +141,8 @@ const byId = new Map(scenes.map((s) => [s.id, s]));
       <p><strong>3.</strong> Червено над бяло значи риболов. Зелено над бяло значи траулер.</p>
       <p><strong>4.</strong> Червено над червено значи кораб без управление. Червено-бяло-червено значи ограничена маневреност.</p>
     </div>
+
+    <QaSection title="Още от изпита: сблъскване и траулери" ids={[368, [379, 381]]} />
 
     <h2>Тест</h2>
     <Quiz title="Светлини и знаци" topic="svetlini" count={10} />

@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Quiz from '../components/Quiz.astro';
+import QaSection from '../components/QaSection.astro';
+import { flags, flagSvg } from '../lib/shapes';
+---
+<Base title="Флагове" description="Сигнални флагове от изпита (Международен кодекс на сигналите) и значението им.">
+  <div class="wrap">
+    <h1>Сигнални флагове</h1>
+    <p>Флаговете от изпита (МКС). Рисунките са мои, цветовете са стандартни. Под тях са оригиналните въпроси от PDF-а с верните отговори.</p>
+    <div class="grid">
+      {flags.map((f) => (
+        <figure class="fig"><Fragment set:html={flagSvg(f.code)} /><figcaption><strong>{f.name}</strong><span>{f.meaning}</span></figcaption></figure>
+      ))}
+    </div>
+    <div class="note warn"><p>Значенията на флагове T и Q са взети по ключа на изпитните въпроси. Ако нещо ти се стори странно, сравни с официалния Международен кодекс на сигналите.</p></div>
+
+    <QaSection title="Флагове от изпита" ids={[[838, 848]]} />
+
+    <h2>Тест</h2>
+    <Quiz title="Сигнални флагове" ids={[838, 839, 840, 841, 842, 843, 844, 845, 846, 847, 848]} count={11} />
+  </div>
+</Base>
