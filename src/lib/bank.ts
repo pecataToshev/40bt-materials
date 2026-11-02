@@ -41,9 +41,9 @@ export const mistakes: { n: number; wrong: number; why: string }[] = [
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 export const qImg = (f: string) => `${BASE}/q/${f}`;
 
-/** Картинка към въпроса: нарисувана от мен схема, иначе оригиналната от PDF-а. */
+/** Картинка към въпроса: винаги оригиналната от PDF-а. */
 export function sceneFor(q: Q): string | undefined {
-  if (q.s) return sceneSvg(q.s);
   if (q.img) return `<img src="${qImg(q.img)}" alt="Картинка към въпрос ${q.n}" loading="lazy" decoding="async">`;
+  if (q.s) return sceneSvg(q.s);
   return undefined;
 }
