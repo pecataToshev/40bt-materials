@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Quiz from '../components/Quiz.astro';
+import QaSection from '../components/QaSection.astro';
 const good: string[] = [
   'Дълго високо налягане: устойчиво хубаво време',
   'През деня влажността намалява, вечерта се увеличава',
@@ -75,6 +76,8 @@ const bad: string[] = [
         <tr><th>Магнитна аномалия</th><td>Бургаски залив</td></tr>
       </tbody>
     </table></div>
+
+    <QaSection title="Още от изпита: вятър и вълнение" ids={[613, 633, 636]} />
 
     <h2>Тест</h2>
     <Quiz title="Времето и районът" topic="vreme" count={10} />
